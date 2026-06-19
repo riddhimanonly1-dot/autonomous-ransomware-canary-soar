@@ -1,0 +1,143 @@
+{
+  "name": "HONEYTRAP",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ransomware-alert",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -640,
+        -16
+      ],
+      "id": "a47792eb-0df5-4339-9e66-4628af2bfd6a",
+      "name": "Webhook",
+      "webhookId": "e3431181-3121-4e1f-a908-ecdadbdd5f0f"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (let i = 0; i < $input.all().length; i++) {\n  let traceData = $input.all()[i].json.compromised_log || \"\";\n  let threatType = $input.all()[i].json.threat_actor || \"UNKNOWN\";\n  \n  // Isolate the mutated locked extension filename directly via split array loops\n  let isolatedTarget = \"Unknown_Asset\";\n  if (traceData.includes(\"TARGET:\")) {\n     let segments = traceData.split(\"|\");\n     for (let element of segments) {\n       if (element.includes(\"TARGET:\")) {\n         isolatedTarget = element.split(\":\")[1].trim();\n         break;\n       }\n     }\n  }\n  \n  // Automatically compile system remediation actions to kill the malware process ID\n  $input.all()[i].json.remediation_kill_cmd = `sudo pkill -f ${threatType}`;\n  $input.all()[i].json.quarantine_target = isolatedTarget;\n}\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        -16
+      ],
+      "id": "7dab9246-d328-4d7f-991d-fa3e529844a7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "guptariddhiman3@gmail.com",
+        "subject": "=🚨 CRITICAL RANSOMWARE ALERT: {{ $json.body.threat_actor }} Identified",
+        "message": "=ATTENTION EMERGENCY INCIDENT RESPONSE TEAM,  An active behavioral canary file trap has intercepted an active ransomware encryption sequence.  [INCIDENT DOSSIER] - Threat Actor Classification:  {{ $json.body.threat_actor }}- Target Signature {{ $json.body.malware_signature }}Isolated:  - Mutated Compromised Target: {{ $json.quarantine_target }}  [SOAR RESPONSE TRIGGERED] The orchestration layer has automatically dispatched a core termination string:  >> {{ $json.remediation_kill_cmd }}  Review production server cluster boundaries and check firewall integrity updates immediately.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        -16
+      ],
+      "id": "32b62d94-db13-418f-9a01-774c8ed95aab",
+      "name": "Send a message",
+      "webhookId": "8348363b-738e-457f-a188-0347d4de60ee",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q6DVUXUaUufORnmc",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Ingestion Gateway: Behavioral Canary Telemetry\n**Intercepts real-time system integrity event logs from the Python honeypot tracker.Captures zero-day runtime indicators (ENCRYPT_AES_256) asynchronously, bypassing static signature limitations.** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 224,
+        "width": 352,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -720,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "6e694d9b-464e-4397-a403-dbcd2588c037",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Triage Engine: Remediation Script Compilation\n**Executes a low-overhead, native JavaScript string manipulation array loop.Isolates the compromised target extension string from the log payload.Automatically compiles a host-level mitigation kill string (pkill) to stop the encryption loop in under 5 milliseconds.** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 224,
+        "width": 368,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "201dce0f-8e17-4966-a2f1-5246339f310a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## SENDS EMAIL TO YOUR EMAILS\n**SENDS EMAIL TO DEVELOPERS INFORMS THEM.** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 240,
+        "width": 400,
+        "color": "#806400"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "995a1ea1-84e3-424d-8ed5-bf53bb104c28",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "05bb3eb1-9f04-432d-a4ac-91991667f691",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b474ccc2aba5eb48ab731669401650b6c37a3745404a1f08bfb73b473fac5b37"
+  },
+  "nodeGroups": [],
+  "id": "x0WQpVkn3kb9EoD5",
+  "tags": []
+}
